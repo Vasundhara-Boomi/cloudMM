@@ -1,56 +1,34 @@
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <unistd.h>
-// #include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 
-// int main() {
-//     int pipe1[2], pipe2[2];
-//     pid_t pid;
-//     char parentMessage[] = "Hello from parent!";
-//     char childMessage[] = "Hello from child!";
-//     char buffer[100];
+#define MAX_SIZE 100
 
-//     // Create the pipes
-//     if (pipe(pipe1) == -1 || pipe(pipe2) == -1) {
-//         perror("Pipe creation failed");
-//         exit(1);
-//     }
+int main(){
 
-//     // Fork to create child process
-//     pid = fork();
+    int p2c[2], c2p[2];
+    pid_t pid;
+    char msg[MAX_SIZE], reply[MAX_SIZE];
 
-//     if (pid < 0) {
-//         perror("Fork failed");
-//         exit(1);
-//     }
+    if (pipe(p2c) == -1 || pipe(c2p) == -1 || (pid = fork()) < 0){
+        perror("Error");
+        return 1;
+    }
 
-//     if (pid > 0) {
-//         // Parent process
-//         close(pipe1[0]); // Close reading end of pipe1
-//         close(pipe2[1]); // Close writing end of pipe2
-
-//         // Send message to child
-//         write(pipe1[1], parentMessage, strlen(parentMessage) + 1);
-//         close(pipe1[1]); // Close writing end after sending
-
-//         // Read child's response
-//         read(pipe2[0], buffer, sizeof(buffer));
-//         printf("Parent received: %s\n", buffer);
-//         close(pipe2[0]); // Close reading end
-//     } else {
-//         // Child process
-//         close(pipe1[1]); // Close writing end of pipe1
-//         close(pipe2[0]); // Close reading end of pipe2
-
-//         // Read message from parent
-//         read(pipe1[0], buffer, sizeof(buffer));
-//         printf("Child received: %s\n", buffer);
-//         close(pipe1[0]); // Close reading end
-
-//         // Send response to parent
-//         write(pipe2[1], childMessage, strlen(childMessage) + 1);
-//         close(pipe2[1]); // Close writing end
-//     }
-
-//     return 0;
-// }
+    if pid{
+        close(p2c[0]); close(c2p[1]);
+        printf("Parent, ent");
+        fgets(msg, MAXSIZE, stdin);
+        write(p2c[1], msg, strlen(msg)+1);
+        read(c2p[0], reply, MAXSIZE);
+        printf("Parent received: %s\n", reply);
+    } else{
+        close(p2c[1]); close(c2p[0]);
+        read(p2c[0], reply, MAXSIZE);
+        printf("Child received %s", reply);
+        printf();
+        fgets(msg, MAXSIZE, stdin);
+        write(c2p[1], msg, strlen(msg) + 1);
+    }
+    return 0;
+}
